@@ -65,11 +65,21 @@ def get_clients():
 async def add_client(request: Request):
     try:
         new_client = await request.json()
+
+        # 🔒 Validatie & strippen van lege of foute velden
+        for key in ("name", "db", "url"):
+            if key not in new_client or not new_client[key].strip():
+                raise HTTPException(status_code=400, detail=f"Missing or empty field: {key}")
+            new_client[key] = new_client[key].strip()
+
+        # ✅ Toevoegen aan clients.json
         with open("clients.json", encoding="utf-8") as f:
             clients = json.load(f)
         clients.append(new_client)
         with open("clients.json", "w", encoding="utf-8") as f:
             json.dump(clients, f, indent=2, ensure_ascii=False)
+
         return {"status": "added", "client": new_client}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
