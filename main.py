@@ -1,9 +1,18 @@
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import subprocess
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # of specifieker bv. ["https://your-lovable-url.com"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/generate-pdf/")
 def generate_pdf(
